@@ -17,23 +17,23 @@
   let currentUser = null
 
   // LOGIN FUNCTION
-  window.loginUser = async function(email, password) {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password
-    })
-    
-    if (error) {
-      console.error('Login error:', error.message)
-      alert('Login failed: ' + error.message)
-      return false
-    } else {
-      currentUser = data.user
-      console.log('Logged in:', currentUser)
-      alert('Login successful!')
-      return true
-    }
+ window.signupUser = async (email, password, name) => {
+  const { data, error } = await supabase.auth.signUp({
+    email, password,
+    options: { data: { full_name: name } }
+  });
+  if (error) throw error;
+  if (data.user) {
+    // ⬇️ YEH LINE IMPORTANT HAI – profile insert karo
+    await supabase.from('profiles').insert([{
+      id: data.user.id,
+      student_name: name,
+      roll_number: 'STU-' + Date.now(),
+      department: 'Not specified',
+    }]);
   }
+  return data;
+}
 
   // SIGNUP FUNCTION
   window.signupUser = async function(email, password, name) {
