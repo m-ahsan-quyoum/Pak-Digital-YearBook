@@ -11,3 +11,27 @@
   </body>
 </html>
 
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My App</title>
+</head>
+<body>
+    <button onclick="handleLogin()">Login</button>
+    
+    <script type="module">
+        import { login, getAllPosts } from './script.js'
+        
+        window.handleLogin = async () => {
+            const result = await login('test@email.com', 'password123')
+            if (result.success) {
+                console.log('Logged in!', result.user)
+                
+                // Posts load karo
+                const posts = await getAllPosts()
+                console.log('Posts:', posts)
+            }
+        }
+    </script>
+</body>
+</html>
