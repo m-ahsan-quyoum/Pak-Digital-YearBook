@@ -1,0 +1,6 @@
+{
+  "name": "Pak-Yearbook",
+  "description": "Pakistan's Digital University Memory Platform for students to preserve, share, and celebrate college memories.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

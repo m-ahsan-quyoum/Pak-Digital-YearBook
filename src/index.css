@@ -1,0 +1,165 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* Premium Harpers digital consulting theme color palette override */
+  --color-art-green: #8B5CF6;
+  --color-art-green-dark: #7C3AED;
+  --color-art-green-light: #F3E8FF;
+  --color-art-beige: #0A041A;
+  --color-art-sand: #120926;
+  --color-art-clay: #190D37;
+  --color-art-border: #2D165C;
+  --color-art-gray: #A78BFA;
+  --color-art-charcoal: #F5F3FF;
+
+  /* Standard emerald mappings for student portfolios */
+  --color-emerald-50: #FAF5FF;
+  --color-emerald-100: #F3E8FF;
+  --color-emerald-200: #E9D5FF;
+  --color-emerald-300: #D8B4FE;
+  --color-emerald-400: #C084FC;
+  --color-emerald-500: #A855F7;
+  --color-emerald-600: #9333EA;
+  --color-emerald-700: #7E22CE;
+  --color-emerald-800: #6B21A8;
+  --color-emerald-900: #581C87;
+  --color-emerald-950: #3B0764;
+
+  --color-green-50: #FAF5FF;
+  --color-green-100: #FCE7F3;
+  --color-green-200: #FBCFE8;
+  --color-green-350: #F472B6;
+  --color-green-400: #F472B6;
+  --color-green-500: #EC4899;
+  --color-green-600: #DB2777;
+  --color-green-700: #BE185D;
+  --color-green-800: #9D174D;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: #0A041A;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #0A041A;
+  color: #F5F3FF;
+}
+
+/* Scroll-triggered reveal animations */
+.reveal-item {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-active {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+/* Elements overriding selectors to seamlessly convert the website to premium consulting theme */
+[class*="bg-[#0a110d]"] {
+  background-color: #0c061d !important;
+}
+[class*="bg-[#0f1813]"] {
+  background-color: #0d0620 !important;
+}
+[class*="bg-[#111a14]"] {
+  background-color: #150c2f !important;
+}
+[class*="bg-[#13231a]"] {
+  background-color: #1f1043 !important;
+}
+[class*="bg-[#15231c]"] {
+  background-color: #271452 !important;
+}
+[class*="bg-[#1C2D3D]"] {
+  background-color: #0c061d !important;
+}
+[class*="bg-[#2B3E52]"] {
+  background-color: #170d37 !important;
+}
+[class*="bg-[#F8F9FA]"] {
+  background-color: #0a041c !important;
+}
+[class*="bg-[#FDFCF9]"] {
+  background-color: #120926 !important;
+  color: #F5F3FF !important;
+}
+[class*="bg-[#F9F8F6]"] {
+  background-color: #130a2f !important;
+}
+[class*="bg-[#F3F1ED]"] {
+  background-color: #1c0e3e !important;
+  color: #F5F3FF !important;
+}
+[class*="bg-[#E6F0EC]"] {
+  background-color: #3b166f !important;
+  color: #F3E8FF !important;
+}
+
+/* Borders conversion to neat technical purple */
+[class*="border-[#1a2d22]"] {
+  border-color: #2d165c !important;
+}
+[class*="border-[#E8E4E0]"] {
+  border-color: #2d165c !important;
+}
+[class*="border-[#3E556B]"] {
+  border-color: #2e1755 !important;
+}
+
+/* Text adjustments for modern digital contrast */
+[class*="text-[#edfcf5]"] {
+  color: #F5F3FF !important;
+}
+[class*="text-[#a2b5ac]"] {
+  color: #D8B4FE !important;
+}
+[class*="text-[#1A1A1A]"] {
+  color: #FAF5FF !important;
+}
+[class*="text-[#006644]"] {
+  color: #C084FC !important;
+}
+[class*="text-[#1E2E3E]"] {
+  color: #FAF5FF !important;
+}
+[class*="text-[#5C6E7E]"] {
+  color: #C084FC !important;
+}
+[class*="text-[#8E9EAC]"] {
+  color: #D8B4FE !important;
+}
+
+/* Primary actions translation to vivid pink highlight */
+[class*="bg-[#DE7257]"] {
+  background-color: #EC4899 !important;
+}
+[class*="text-[#DE7257]"] {
+  color: #F472B6 !important;
+}
+[class*="border-[#DE7257]"] {
+  border-color: #EC4899 !important;
+}
+[class*="hover:bg-[#C75F46]"]:hover {
+  background-color: #DB2777 !important;
+}
+
+/* Smooth keyframes for modern page transitions */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
