@@ -633,39 +633,19 @@ export default function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
                             className="space-y-3.5"
                           >
                             <div>
-                              <label className="block text-[10px] font-black uppercase tracking-wider text-purple-300 mb-1 flex items-center gap-1.5">
+                              <label className="block text-[10px] font-black uppercase tracking-wider text-purple-300 mb-1.5 flex items-center gap-1.5">
                                 <School className="h-3.5 w-3.5 text-pink-500" /> Educational Institute Location
                               </label>
                               
-                              <div className="relative">
-                                <input
-                                  type="text"
-                                  list="university-list"
-                                  placeholder="Start typing, select or search university..."
-                                  value={selectedUni}
-                                  onChange={(e) => setSelectedUni(e.target.value)}
-                                  className="w-full bg-[#F3F1ED] border border-[#E8E4E0] text-xs text-[#1E2E3E] rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-pink-500 font-bold focus:bg-white"
-                                />
-                                <datalist id="university-list">
-                                  {universities.map(uni => (
-                                    <option key={uni.id} value={uni.name}>{uni.name}</option>
-                                  ))}
-                                </datalist>
-                              </div>
-                              
-                              <div className="flex justify-between items-center mt-1.5">
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const randUni = PRESET_UNIVERSITIES_LIST[Math.floor(Math.random() * PRESET_UNIVERSITIES_LIST.length)];
-                                    setSelectedUni(randUni);
-                                  }}
-                                  className="text-[10px] text-pink-400 hover:text-pink-300 transition-all flex items-center gap-1 font-extrabold cursor-pointer bg-pink-500/10 hover:bg-pink-500/20 px-3 py-1 rounded-lg border border-pink-500/25 active:scale-95 shadow-sm"
-                                >
-                                  <span>🎲 Randomly Select University</span>
-                                </button>
-                                <span className="text-[9px] text-purple-300 italic font-mono uppercase tracking-tight">Type custom name or search list</span>
-                              </div>
+                              <select
+                                value={selectedUni}
+                                onChange={(e) => setSelectedUni(e.target.value)}
+                                className="w-full bg-[#F3F1ED] border border-[#E8E4E0] text-xs text-[#1E2E3E] rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-pink-500 font-bold cursor-pointer"
+                              >
+                                {PRESET_UNIVERSITIES_LIST.map((name, idx) => (
+                                  <option key={idx} value={name}>{name}</option>
+                                ))}
+                              </select>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
