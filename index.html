@@ -133,6 +133,7 @@
 
   // CHECK IF USER IS LOGGED IN ON PAGE LOAD
   async function checkAuth() {
+    window.supabase=supabase;
     const { data: { session } } = await supabase.auth.getSession()
     if (session?.user) {
       currentUser = session.user
