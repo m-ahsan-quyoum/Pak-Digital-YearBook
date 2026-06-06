@@ -36,6 +36,31 @@ const DEPARTMENTS = [
 
 const BATCHES = ['2020', '2021', '2022', '2023', '2024', '2025', '2026'];
 
+const PRESET_UNIVERSITIES_LIST = [
+  'FAST NUCES (NUCES-FAST Lahore)',
+  'FAST NUCES (NUCES-FAST Islamabad)',
+  'FAST NUCES (NUCES-FAST Karachi)',
+  'FAST NUCES (NUCES-FAST Peshawar)',
+  'FAST NUCES (NUCES-FAST Faisalabad)',
+  'NUST (National University of Sciences & Technology, Islamabad)',
+  'LUMS (Lahore University of Management Sciences)',
+  'UET Lahore (University of Engineering & Technology)',
+  'COMSATS University Islamabad',
+  'IQRA University Karachi',
+  'NED University of Engineering & Technology',
+  'GIKI (Ghulam Ishaq Khan Institute, Topi)',
+  'QAU (Quaid-i-Azam University, Islamabad)',
+  'Punjab University (University of the Punjab, Lahore)',
+  'University of Karachi',
+  'Bahauddin Zakariya University (BZU, Multan)',
+  'ITU (Information Technology University, Lahore)',
+  'PIEAS (Pakistan Institute of Engineering and Applied Sciences)',
+  'UAF (University of Agriculture, Faisalabad)',
+  'Karakoram International University',
+  'University of Peshawar',
+  'University of Balochistan'
+];
+
 const HERO_BACKGROUNDS = [
   {
     url: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1400&q=80&auto=format&fit=crop',
@@ -105,12 +130,43 @@ export default function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
     const loadUnis = async () => {
       try {
         const list = await api.universities.list();
-        setUniversities(list);
-        if (list.length > 0) {
-          setSelectedUni(list[0].name);
+        const existingNames = new Set(list.map(u => u.name.toLowerCase()));
+        const mergedUnis: University[] = [...list];
+        
+        PRESET_UNIVERSITIES_LIST.forEach((uniName, idx) => {
+          if (!existingNames.has(uniName.toLowerCase())) {
+            mergedUnis.push({
+              id: `preset-${idx}`,
+              name: uniName,
+              province: 'Punjab',
+              logo: '',
+              location: 'Pakistan',
+              website: '',
+              isApproved: true,
+              numStudents: 150
+            });
+          }
+        });
+        
+        setUniversities(mergedUnis);
+        if (mergedUnis.length > 0) {
+          setSelectedUni(mergedUnis[0].name);
         }
       } catch (err) {
         console.error('Failed to load universities list', err);
+        // Clean robust fallback in case of connection failure or empty DB
+        const fallbackUnis: University[] = PRESET_UNIVERSITIES_LIST.map((name, idx) => ({
+          id: `preset-${idx}`,
+          name,
+          province: 'Punjab',
+          logo: '',
+          location: 'Pakistan',
+          website: '',
+          isApproved: true,
+          numStudents: 150
+        }));
+        setUniversities(fallbackUnis);
+        setSelectedUni(fallbackUnis[0].name);
       }
     };
     loadUnis();
@@ -577,29 +633,50 @@ export default function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
                             className="space-y-3.5"
                           >
                             <div>
-                              <label className="block text-[10px] font-black uppercase tracking-wider text-[#5C6E7E] mb-1 flex items-center gap-1.5">
-                                <School className="h-3.5 w-3.5 text-[#DE7257]" /> Educational Institute Location
+                              <label className="block text-[10px] font-black uppercase tracking-wider text-purple-300 mb-1 flex items-center gap-1.5">
+                                <School className="h-3.5 w-3.5 text-pink-500" /> Educational Institute Location
                               </label>
-                              <select
-                                value={selectedUni}
-                                onChange={(e) => setSelectedUni(e.target.value)}
-                                className="w-full bg-[#F3F1ED] border border-[#E8E4E0] text-xs text-[#1E2E3E] rounded-xl px-3 py-2.5 focus:outline-none focus:border-[#DE7257] font-bold cursor-pointer"
-                              >
-                                {universities.map(uni => (
-                                  <option key={uni.id} value={uni.name}>{uni.name}</option>
-                                ))}
-                              </select>
+                              
+                              <div className="relative">
+                                <input
+                                  type="text"
+                                  list="university-list"
+                                  placeholder="Start typing, select or search university..."
+                                  value={selectedUni}
+                                  onChange={(e) => setSelectedUni(e.target.value)}
+                                  className="w-full bg-[#F3F1ED] border border-[#E8E4E0] text-xs text-[#1E2E3E] rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-pink-500 font-bold focus:bg-white"
+                                />
+                                <datalist id="university-list">
+                                  {universities.map(uni => (
+                                    <option key={uni.id} value={uni.name}>{uni.name}</option>
+                                  ))}
+                                </datalist>
+                              </div>
+                              
+                              <div className="flex justify-between items-center mt-1.5">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const randUni = PRESET_UNIVERSITIES_LIST[Math.floor(Math.random() * PRESET_UNIVERSITIES_LIST.length)];
+                                    setSelectedUni(randUni);
+                                  }}
+                                  className="text-[10px] text-pink-400 hover:text-pink-300 transition-all flex items-center gap-1 font-extrabold cursor-pointer bg-pink-500/10 hover:bg-pink-500/20 px-3 py-1 rounded-lg border border-pink-500/25 active:scale-95 shadow-sm"
+                                >
+                                  <span>🎲 Randomly Select University</span>
+                                </button>
+                                <span className="text-[9px] text-purple-300 italic font-mono uppercase tracking-tight">Type custom name or search list</span>
+                              </div>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                               <div>
-                                <label className="block text-[10px] font-black uppercase tracking-wider text-[#5C6E7E] mb-1 flex items-center gap-1.5">
-                                  <BookOpen className="h-3.5 w-3.5 text-[#DE7257]" /> Department
+                                <label className="block text-[10px] font-black uppercase tracking-wider text-purple-300 mb-1 flex items-center gap-1.5">
+                                  <BookOpen className="h-3.5 w-3.5 text-pink-500" /> Department
                                 </label>
                                 <select
                                   value={selectedDept}
                                   onChange={(e) => setSelectedDept(e.target.value)}
-                                  className="w-full bg-[#F3F1ED] border border-[#E8E4E0] text-xs text-[#1E2E3E] rounded-xl px-2 py-2.5 focus:outline-none focus:border-[#DE7257] cursor-pointer"
+                                  className="w-full bg-[#F3F1ED] border border-[#E8E4E0] text-xs text-[#1E2E3E] rounded-xl px-2 py-2.5 focus:outline-none focus:border-pink-500 cursor-pointer font-bold"
                                 >
                                   {DEPARTMENTS.map(dept => (
                                     <option key={dept} value={dept}>{dept}</option>
@@ -609,11 +686,11 @@ export default function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
 
                               <div className="grid grid-cols-2 gap-2">
                                 <div>
-                                  <label className="block text-[10px] font-black uppercase tracking-wider text-[#5C6E7E] mb-1">Degree</label>
+                                  <label className="block text-[10px] font-black uppercase tracking-wider text-purple-300 mb-1">Degree</label>
                                   <select
                                     value={degree}
                                     onChange={(e) => setDegree(e.target.value)}
-                                    className="w-full bg-[#F3F1ED] border border-[#E8E4E0] text-xs text-[#1E2E3E] rounded-xl px-2 py-2.5 focus:outline-none focus:border-[#DE7257] cursor-pointer"
+                                    className="w-full bg-[#F3F1ED] border border-[#E8E4E0] text-xs text-[#1E2E3E] rounded-xl px-2 py-2.5 focus:outline-none focus:border-pink-500 cursor-pointer font-bold"
                                   >
                                     <option value="Bachelors">BS / BE</option>
                                     <option value="Masters">MS / MBA</option>
@@ -622,11 +699,11 @@ export default function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
                                 </div>
 
                                 <div>
-                                  <label className="block text-[10px] font-black uppercase tracking-wider text-[#5C6E7E] mb-1">Cohort Batch</label>
+                                  <label className="block text-[10px] font-black uppercase tracking-wider text-purple-300 mb-1">Cohort Batch</label>
                                   <select
                                     value={batch}
                                     onChange={(e) => setBatch(e.target.value)}
-                                    className="w-full bg-[#F3F1ED] border border-[#E8E4E0] text-xs text-[#1E2E3E] rounded-xl px-2 py-2.5 focus:outline-none focus:border-[#DE7257] cursor-pointer"
+                                    className="w-full bg-[#F3F1ED] border border-[#E8E4E0] text-xs text-[#1E2E3E] rounded-xl px-2 py-2.5 focus:outline-none focus:border-pink-500 cursor-pointer font-bold"
                                   >
                                     {BATCHES.map(b => (
                                       <option key={b} value={b}>{b}</option>
