@@ -6,3 +6,5 @@ const supabaseAnonKey = 'sb_publishable_jhxtz2jEeYK2mzWQd_tgdw_4ToyApFg'
 
 // 👇 Connection create karna
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+
