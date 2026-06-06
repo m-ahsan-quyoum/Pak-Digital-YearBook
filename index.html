@@ -8,30 +8,142 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script type="module">
+  import { supabase } from './supabase.js'
+
+  // ========== SUPABASE FUNCTIONS ==========
+  
+  // Current user ko store karne ke liye
+  let currentUser = null
+
+  // LOGIN FUNCTION
+  window.loginUser = async function(email, password) {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password
+    })
+    
+    if (error) {
+      console.error('Login error:', error.message)
+      alert('Login failed: ' + error.message)
+      return false
+    } else {
+      currentUser = data.user
+      console.log('Logged in:', currentUser)
+      alert('Login successful!')
+      return true
+    }
+  }
+
+  // SIGNUP FUNCTION
+  window.signupUser = async function(email, password, name) {
+    const { data, error } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+      options: { data: { full_name: name } }
+    })
+    
+    if (error) {
+      console.error('Signup error:', error.message)
+      alert('Signup failed: ' + error.message)
+      return false
+    } else {
+      // Profile create karo
+      if (data.user) {
+        await supabase.from('profiles').insert([{
+          id: data.user.id,
+          student_name: name,
+          roll_number: 'STU-' + Date.now()
+        }])
+      }
+      alert('Signup successful! Please login.')
+      return true
+    }
+  }
+
+  // LOGOUT FUNCTION
+  window.logoutUser = async function() {
+    await supabase.auth.signOut()
+    currentUser = null
+    alert('Logged out!')
+  }
+
+  // CREATE POST FUNCTION
+  window.createPost = async function(mediaUrl, mediaType, caption, tags, eventCategory) {
+    if (!currentUser) {
+      alert('Please login first')
+      return false
+    }
+    
+    const { error } = await supabase.from('posts').insert([{
+      user_id: currentUser.id,
+      media_url: mediaUrl,
+      media_type: mediaType,
+      caption: caption,
+      tags: tags,
+      event_category: eventCategory,
+      university_tag: 'Your University',
+      department_tag: 'Your Department'
+    }])
+    
+    if (error) {
+      alert('Error: ' + error.message)
+      return false
+    } else {
+      alert('Post created successfully!')
+      return true
+    }
+  }
+
+  // GET ALL POSTS FUNCTION
+  window.getAllPosts = async function() {
+    const { data, error } = await supabase
+      .from('posts')
+      .select(`
+        *,
+        profiles:user_id (student_name, avatar_url, roll_number)
+      `)
+      .order('created_at', { ascending: false })
+    
+    if (error) {
+      console.error('Error:', error)
+      return []
+    }
+    return data || []
+  }
+
+  // LIKE POST FUNCTION
+  window.likePost = async function(postId) {
+    if (!currentUser) {
+      alert('Please login first')
+      return false
+    }
+    
+    const { error } = await supabase
+      .from('likes')
+      .insert([{ post_id: postId, user_id: currentUser.id }])
+    
+    if (!error) {
+      // Update likes count
+      await supabase.rpc('increment_likes', { post_id: postId })
+      return true
+    }
+    return false
+  }
+
+  // CHECK IF USER IS LOGGED IN ON PAGE LOAD
+  async function checkAuth() {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (session?.user) {
+      currentUser = session.user
+      console.log('Already logged in as:', currentUser.email)
+    }
+  }
+  
+  checkAuth()
+
+  console.log('Supabase connected! Ready to use.')
+</script>
   </body>
 </html>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>My App</title>
-</head>
-<body>
-    <button onclick="handleLogin()">Login</button>
-    
-    <script type="module">
-        import { login, getAllPosts } from './script.js'
-        
-        window.handleLogin = async () => {
-            const result = await login('test@email.com', 'password123')
-            if (result.success) {
-                console.log('Logged in!', result.user)
-                
-                // Posts load karo
-                const posts = await getAllPosts()
-                console.log('Posts:', posts)
-            }
-        }
-    </script>
-</body>
-</html>
